@@ -1,4 +1,5 @@
 # Google Bard API
+[![Better Stack Badge](https://uptime.betterstack.com/status-badges/v1/monitor/t0t1.svg)](https://status.nishantapps.in/?utm_source=status_badge)
 ```markdown
 # Express Chat Application with Google AI Generative Language
 
