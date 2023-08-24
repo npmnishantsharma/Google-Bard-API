@@ -1,5 +1,5 @@
 const express = require('express');
-const translate = require('translate-google');
+const translate = require('translate-api');
 const app = express();
 const port = process.env.PORT;
 const { DiscussServiceClient } = require("@google-ai/generativelanguage");
@@ -21,8 +21,8 @@ app.get('/', async (req, res) => {
 
     // Check if lang is provided in headers and perform translation if needed
     if (headers['lang']) {
-      const supportedLanguages = translate.languages;
-      
+      const supportedLanguages = await translate.getLangs();
+
       // Check if the provided lang is valid
       if (!supportedLanguages.includes(headers['lang'])) {
         const supportedLangsMessage = `Invalid language provided. Supported languages are: ${supportedLanguages.join(', ')}`;
@@ -33,7 +33,7 @@ app.get('/', async (req, res) => {
       translation = await translate(content, { from: 'auto', to: 'en' });
 
       // Translate the English text to the specified language
-      translation = await translate(translation, { to: headers['lang'] });
+      translation = await translate(translation.text, { to: headers['lang'] });
     }
 
     const result = await client.generateMessage({
