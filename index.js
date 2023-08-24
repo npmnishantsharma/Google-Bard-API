@@ -28,7 +28,8 @@ app.get('/', async (req, res) => {
 
       // Check if the provided lang is valid
       if (!supportedLanguages.includes(headers['lang'])) {
-        return res.json({ response: "Invalid language provided." });
+        const supportedLangsMessage = `Invalid language provided. Supported languages are: ${supportedLanguages.join(', ')}`;
+        return res.json({ response: supportedLangsMessage });
       }
 
       // Translate the input text to English first
@@ -61,5 +62,5 @@ app.get('/', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is listening at http://0.0.0.0:${port}`);
+  console.log(`Server is listening at http://localhost:${port}`);
 });
