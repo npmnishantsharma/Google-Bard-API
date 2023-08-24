@@ -1,12 +1,9 @@
 const express = require('express');
-const { Translate } = require('@google-cloud/translate').v2; // Import Google Translate library
+const translate = require('translate-google');
 const app = express();
 const port = process.env.PORT;
 const { DiscussServiceClient } = require("@google-ai/generativelanguage");
 const { GoogleAuth } = require("google-auth-library");
-
-// Set up Google Translate client
-const translate = new Translate();
 
 const client = new DiscussServiceClient({
   authClient: new GoogleAuth().fromAPIKey(process.env.plamkey),
@@ -24,8 +21,8 @@ app.get('/', async (req, res) => {
 
     // Check if lang is provided in headers and perform translation if needed
     if (headers['lang']) {
-      const [supportedLanguages] = await translate.getLanguages();
-
+      const supportedLanguages = translate.languages;
+      
       // Check if the provided lang is valid
       if (!supportedLanguages.includes(headers['lang'])) {
         const supportedLangsMessage = `Invalid language provided. Supported languages are: ${supportedLanguages.join(', ')}`;
@@ -33,10 +30,10 @@ app.get('/', async (req, res) => {
       }
 
       // Translate the input text to English first
-      translation = await translate.translate(content, 'en');
+      translation = await translate(content, { from: 'auto', to: 'en' });
 
       // Translate the English text to the specified language
-      translation = await translate.translate(translation, headers['lang']);
+      translation = await translate(translation, { to: headers['lang'] });
     }
 
     const result = await client.generateMessage({
@@ -51,7 +48,7 @@ app.get('/', async (req, res) => {
 
     // Translate the generated response to the specified language
     if (headers['lang']) {
-      responseContent = await translate.translate(responseContent, headers['lang']);
+      responseContent = await translate(responseContent, { to: headers['lang'] });
     }
 
     res.json({ response: responseContent });
